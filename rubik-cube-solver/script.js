@@ -33,7 +33,7 @@ const ROTATION_DIRECTIONS = {
 };
 
 let cubeSize = 50;
-let cubeSquareAmount = 1 //not implemented yet
+let cubeSquareAmount = 3 //not implemented yet
 let animationSpeed = 10;
 
 let cubes = [];
@@ -102,12 +102,12 @@ function createRubikCube(){
           x - 1, 
           y - 1, 
           z - 1,
-          x === 2 ? 'red' : 'white', // Front face
-          x === 0 ? 'orange' : 'white', // Back face
-          y === 0 ? 'green' : 'white', // Left face
-          y === 2 ? 'blue' : 'white', // Right face
-          z === 2 ? 'yellow' : 'white', // Top face
-          z === 0 ? 'white' : 'white' // Bottom face
+          z === 2 ? 'red' : 'white', // Front face
+          z === 0 ? 'orange' : 'white', // Back face
+          x === 0 ? 'green' : 'white', // Left face
+          x === 2 ? 'blue' : 'white', // Right face
+          y === 0 ? 'yellow' : 'white', // Top face
+          y === 2 ? 'white' : 'white', // Bottom face
         ));
       }
     }
@@ -141,6 +141,15 @@ function drawRubikCube() {
     
     translate(cube.x * cubeSize, cube.y  * cubeSize, cube.z  * cubeSize)
     
+    // for(let face in FACES){
+    //   if(face == FACES.TOP){
+    //     beginShape();
+    //     fill(cube.faces[face]);
+    //     vertex(1, 1, 1);
+    //     endShape(CLOSE);
+    //   }
+    // }
+
     // Paint each face individually
     beginShape();
     // Front face
@@ -162,15 +171,53 @@ function drawRubikCube() {
     vertex(cubeSize / 2, -cubeSize / 2, -cubeSize / 2);
     endShape(CLOSE);
 
+    beginShape();
+    // Left face
+    fill(cube.faces[FACES.LEFT]);
 
-    box(cubeSize);
+    vertex(-cubeSize / 2, -cubeSize / 2, -cubeSize / 2);
+    vertex(-cubeSize / 2, -cubeSize / 2, cubeSize / 2);
+    vertex(-cubeSize / 2, cubeSize / 2, cubeSize / 2);
+    vertex(-cubeSize / 2, cubeSize / 2, -cubeSize / 2);
+    endShape(CLOSE);
+
+    beginShape();
+    // Right face
+    fill(cube.faces[FACES.RIGHT]);
+
+    vertex(cubeSize / 2, -cubeSize / 2, -cubeSize / 2);
+    vertex(cubeSize / 2, cubeSize / 2, -cubeSize / 2);
+    vertex(cubeSize / 2, cubeSize / 2, cubeSize / 2);
+    vertex(cubeSize / 2, -cubeSize / 2, cubeSize / 2);
+    endShape(CLOSE);
+
+    beginShape();
+    // Top face
+    fill(cube.faces[FACES.TOP]);
+
+    vertex(-cubeSize / 2, -cubeSize / 2, -cubeSize / 2);
+    vertex(cubeSize / 2, -cubeSize / 2, -cubeSize / 2);
+    vertex(cubeSize / 2, -cubeSize / 2, cubeSize / 2);
+    vertex(-cubeSize / 2, -cubeSize / 2, cubeSize / 2);
+    endShape(CLOSE);
+
+    beginShape();
+    // Bottom face
+    fill(cube.faces[FACES.BOTTOM]);
+
+    vertex(-cubeSize / 2, cubeSize / 2, -cubeSize / 2);
+    vertex(-cubeSize / 2, cubeSize / 2, cubeSize / 2);
+    vertex(cubeSize / 2, cubeSize / 2, cubeSize / 2);
+    vertex(cubeSize / 2, cubeSize / 2, -cubeSize / 2);
+    endShape(CLOSE);
+
+    // box(cubeSize);
     pop();
   }
 }
 
 function shouldRotate(cube){
   if(rotatingFace == FACES.TOP){
-    console.log(`Checking TOP face: cube.y = ${cube.y}`);
     return cube.y == 1;
   }
   if(rotatingFace == FACES.RIGHT) {
@@ -186,7 +233,6 @@ function shouldRotate(cube){
     return cube.x == -1;
   }
   if(rotatingFace == FACES.BOTTOM) {
-    console.log(`Checking BOTTOM face: cube.y = ${cube.y}`);
     return cube.y == -1;
   }
   return false;
