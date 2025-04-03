@@ -35,6 +35,7 @@ const ROTATION_DIRECTIONS = {
 let cubeSize = 50;
 let cubeSquareAmount = 3 //not implemented yet
 let animationSpeed = 10;
+let showFps = false
 
 let cubes = [];
 
@@ -45,10 +46,17 @@ let rotationAngle = 0;
 
 let camera;
 
+let font;
+
+function preload() {
+  font = loadFont('assets/Poppins-Regular.ttf'); // Ensure the font file exists in the 'assets' folder
+}
+
 function setup() {
   createCanvas(500, 500, WEBGL);
   camera = createCamera();
   createRubikCube();
+  textFont(font); // Set the font after loading
 }
 
 function draw() {
@@ -57,6 +65,14 @@ function draw() {
   orbitControl();
   lights();
   noStroke();
+  
+  // Display FPS
+  if(showFps){
+    push();
+    fill(255);
+    text(`FPS: ${Math.round(frameRate())}`, 10 - width / 2, 20 - height / 2);
+    pop();
+  }
   
   drawRubikCube();
 
@@ -71,18 +87,36 @@ function draw() {
             const newZ = Math.round(cube.x * angle);
             cube.x = newX;
             cube.z = newZ;
+
+            const temp = cube.faces[FACES.FRONT];
+            cube.faces[FACES.FRONT] = cube.faces[FACES.LEFT];
+            cube.faces[FACES.LEFT] = cube.faces[FACES.BACK];
+            cube.faces[FACES.BACK] = cube.faces[FACES.RIGHT];
+            cube.faces[FACES.RIGHT] = temp;
           } else if (rotatingFace == FACES.RIGHT || rotatingFace == FACES.LEFT) {
             const angle = rotationDirection == ROTATION_DIRECTIONS.CLOCKWISE ? -1 : 1;
             const newY = Math.round(cube.z * angle);
             const newZ = Math.round(-cube.y * angle);
             cube.y = newY;
             cube.z = newZ;
+
+            const temp = cube.faces[FACES.FRONT];
+            cube.faces[FACES.FRONT] = cube.faces[FACES.BOTTOM];
+            cube.faces[FACES.BOTTOM] = cube.faces[FACES.BACK];
+            cube.faces[FACES.BACK] = cube.faces[FACES.TOP];
+            cube.faces[FACES.TOP] = temp;
           } else if (rotatingFace == FACES.FRONT || rotatingFace == FACES.BACK) {
             const angle = rotationDirection == ROTATION_DIRECTIONS.CLOCKWISE ? -1 : 1;
             const newX = Math.round(cube.y * angle);
             const newY = Math.round(-cube.x * angle);
             cube.x = newX;
             cube.y = newY;
+
+            const temp = cube.faces[FACES.TOP];
+            cube.faces[FACES.TOP] = cube.faces[FACES.LEFT];
+            cube.faces[FACES.LEFT] = cube.faces[FACES.BOTTOM];
+            cube.faces[FACES.BOTTOM] = cube.faces[FACES.RIGHT];
+            cube.faces[FACES.RIGHT] = temp;
           }
         }
       }
@@ -140,15 +174,6 @@ function drawRubikCube() {
     }
     
     translate(cube.x * cubeSize, cube.y  * cubeSize, cube.z  * cubeSize)
-    
-    // for(let face in FACES){
-    //   if(face == FACES.TOP){
-    //     beginShape();
-    //     fill(cube.faces[face]);
-    //     vertex(1, 1, 1);
-    //     endShape(CLOSE);
-    //   }
-    // }
 
     // Paint each face individually
     beginShape();
@@ -218,7 +243,7 @@ function drawRubikCube() {
 
 function shouldRotate(cube){
   if(rotatingFace == FACES.TOP){
-    return cube.y == 1;
+    return cube.y == -1;
   }
   if(rotatingFace == FACES.RIGHT) {
     return cube.x == 1;
@@ -233,7 +258,7 @@ function shouldRotate(cube){
     return cube.x == -1;
   }
   if(rotatingFace == FACES.BOTTOM) {
-    return cube.y == -1;
+    return cube.y == 1;
   }
   return false;
 }
@@ -253,10 +278,14 @@ function shouldRotate(cube){
 // }
 
 setInterval(() => {
+  if(isAnimating) return;
+
   const faceKeys = Object.keys(FACES);
   rotatingFace = FACES[faceKeys[Math.floor(Math.random() * faceKeys.length)]];
+  // rotatingFace = FACES.BACK;
   const rotationKeys = Object.keys(ROTATION_DIRECTIONS);
-  rotationDirection = ROTATION_DIRECTIONS[rotationKeys[Math.floor(Math.random() * rotationKeys.length)]];
+  // rotationDirection = ROTATION_DIRECTIONS[rotationKeys[Math.floor(Math.random() * rotationKeys.length)]];
+  rotationDirection = ROTATION_DIRECTIONS.CLOCKWISE;
   isAnimating = true;
-}, 90/animationSpeed * 30);
+}, 0);
 
