@@ -11,13 +11,13 @@ const ROTATION_DIRECTIONS = {
   COUNTERCLOCKWISE: "COUNTERCLOCKWISE",
 };
 const FACE_COLORS = {
-  FRONT: "red",
-  BACK: "orange",
-  LEFT: "green",
-  RIGHT: "blue",
-  UP: "yellow",
-  DOWN: "white",
-}
+  [FACES.FRONT]: "red",
+  [FACES.BACK]: "orange",
+  [FACES.LEFT]: "green",
+  [FACES.RIGHT]: "blue",
+  [FACES.UP]: "yellow",
+  [FACES.DOWN]: "white",
+};
 
 let cubeSize = 50;
 let cubeSquareAmount = 3; //not implemented yet
@@ -90,12 +90,12 @@ function createRubikCube() {
             x - 1,
             y - 1,
             z - 1,
-            z === 2 ? FACE_COLORS.FRONT : "white",
-            z === 0 ? FACE_COLORS.BACK : "white",
-            x === 0 ? FACE_COLORS.LEFT : "white",
-            x === 2 ? FACE_COLORS.RIGHT : "white",
-            y === 0 ? FACE_COLORS.UP : "white",
-            y === 2 ? FACE_COLORS.DOWN : "white"
+            z === 2 ? FACE_COLORS[FACES.FRONT] : "white",
+            z === 0 ? FACE_COLORS[FACES.BACK] : "white",
+            x === 0 ? FACE_COLORS[FACES.LEFT] : "white",
+            x === 2 ? FACE_COLORS[FACES.RIGHT] : "white",
+            y === 0 ? FACE_COLORS[FACES.UP] : "white",
+            y === 2 ? FACE_COLORS[FACES.DOWN] : "white"
           )
         );
       }

@@ -26,7 +26,7 @@ class IndividualCube {
 
   draw() {
     push();
-    console.log(cubes)
+
     const actions = {
       [FACES.UP]: rotateY,
       [FACES.DOWN]: rotateY,
