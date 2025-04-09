@@ -19,17 +19,17 @@ class IndividualCube {
       [FACES.BACK]: backColor,
       [FACES.LEFT]: leftColor,
       [FACES.RIGHT]: rightColor,
-      [FACES.TOP]: topColor,
-      [FACES.BOTTOM]: bottomColor,
+      [FACES.UP]: topColor,
+      [FACES.DOWN]: bottomColor,
     };
   }
 
   draw() {
     push();
-
+    console.log(cubes)
     const actions = {
-      [FACES.TOP]: rotateY,
-      [FACES.BOTTOM]: rotateY,
+      [FACES.UP]: rotateY,
+      [FACES.DOWN]: rotateY,
       [FACES.RIGHT]: rotateX,
       [FACES.LEFT]: rotateX,
       [FACES.FRONT]: rotateZ,
@@ -88,8 +88,8 @@ class IndividualCube {
         ],
       },
       {
-        faceSide: FACES.TOP,
-        color: this.faces[FACES.TOP],
+        faceSide: FACES.UP,
+        color: this.faces[FACES.UP],
         vertices: [
           [-1, -1, -1],
           [1, -1, -1],
@@ -98,8 +98,8 @@ class IndividualCube {
         ],
       },
       {
-        faceSide: FACES.BOTTOM,
-        color: this.faces[FACES.BOTTOM],
+        faceSide: FACES.DOWN,
+        color: this.faces[FACES.DOWN],
         vertices: [
           [-1, 1, -1],
           [-1, 1, 1],
@@ -112,7 +112,7 @@ class IndividualCube {
     for (const face of faces) {
       fill(face.color);
       beginShape();
-      for (const [vx, vy, vz] of face.vertices) {
+      for (const [x, y, z] of face.vertices) {
         if (
           (this.z === 1 &&
             (face.faceSide == FACES.FRONT || rotatingFace == FACES.FRONT)) ||
@@ -123,12 +123,12 @@ class IndividualCube {
           (this.x === 1 &&
             (face.faceSide == FACES.RIGHT || rotatingFace == FACES.RIGHT)) ||
           (this.y === -1 &&
-            (face.faceSide == FACES.TOP || rotatingFace == FACES.TOP)) ||
+            (face.faceSide == FACES.UP || rotatingFace == FACES.UP)) ||
           (this.y === 1 &&
-            (face.faceSide == FACES.BOTTOM || rotatingFace == FACES.BOTTOM)) ||
+            (face.faceSide == FACES.DOWN || rotatingFace == FACES.DOWN)) ||
           rotatingFace == face.faceSide
         ) {
-          vertex((vx * cubeSize) / 2, (vy * cubeSize) / 2, (vz * cubeSize) / 2);
+          vertex((x * cubeSize) / 2, (y * cubeSize) / 2, (z * cubeSize) / 2);
         }
       }
       endShape(CLOSE);
@@ -138,7 +138,7 @@ class IndividualCube {
   }
 
   spin(rotatingFace) {
-    if (rotatingFace == FACES.TOP || rotatingFace == FACES.BOTTOM) {
+    if (rotatingFace == FACES.UP || rotatingFace == FACES.DOWN) {
       const angle = rotationDirection == ROTATION_DIRECTIONS.CLOCKWISE ? -1 : 1;
       const newX = Math.round(-this.z * angle);
       const newZ = Math.round(this.x * angle);
@@ -158,10 +158,10 @@ class IndividualCube {
       this.z = newZ;
 
       const temp = this.faces[FACES.FRONT];
-      this.faces[FACES.FRONT] = this.faces[FACES.BOTTOM];
-      this.faces[FACES.BOTTOM] = this.faces[FACES.BACK];
-      this.faces[FACES.BACK] = this.faces[FACES.TOP];
-      this.faces[FACES.TOP] = temp;
+      this.faces[FACES.FRONT] = this.faces[FACES.DOWN];
+      this.faces[FACES.DOWN] = this.faces[FACES.BACK];
+      this.faces[FACES.BACK] = this.faces[FACES.UP];
+      this.faces[FACES.UP] = temp;
     } else if (rotatingFace == FACES.FRONT || rotatingFace == FACES.BACK) {
       const angle = rotationDirection == ROTATION_DIRECTIONS.CLOCKWISE ? -1 : 1;
       const newX = Math.round(this.y * angle);
@@ -169,33 +169,24 @@ class IndividualCube {
       this.x = newX;
       this.y = newY;
 
-      const temp = this.faces[FACES.TOP];
-      this.faces[FACES.TOP] = this.faces[FACES.LEFT];
-      this.faces[FACES.LEFT] = this.faces[FACES.BOTTOM];
-      this.faces[FACES.BOTTOM] = this.faces[FACES.RIGHT];
+      const temp = this.faces[FACES.UP];
+      this.faces[FACES.UP] = this.faces[FACES.LEFT];
+      this.faces[FACES.LEFT] = this.faces[FACES.DOWN];
+      this.faces[FACES.DOWN] = this.faces[FACES.RIGHT];
       this.faces[FACES.RIGHT] = temp;
     }
   }
 
   shouldRotate() {
-    if (rotatingFace == FACES.TOP) {
-      return this.y == -1;
-    }
-    if (rotatingFace == FACES.RIGHT) {
-      return this.x == 1;
-    }
-    if (rotatingFace == FACES.FRONT) {
-      return this.z == 1;
-    }
-    if (rotatingFace == FACES.BACK) {
-      return this.z == -1;
-    }
-    if (rotatingFace == FACES.LEFT) {
-      return this.x == -1;
-    }
-    if (rotatingFace == FACES.BOTTOM) {
-      return this.y == 1;
-    }
-    return false;
+    const faceConditions = {
+      [FACES.UP]: this.y == -1,
+      [FACES.RIGHT]: this.x == 1,
+      [FACES.FRONT]: this.z == 1,
+      [FACES.BACK]: this.z == -1,
+      [FACES.LEFT]: this.x == -1,
+      [FACES.DOWN]: this.y == 1,
+    };
+
+    return faceConditions[rotatingFace];
   }
 }

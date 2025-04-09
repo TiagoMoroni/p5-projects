@@ -3,13 +3,21 @@ const FACES = {
   BACK: "BACK",
   LEFT: "LEFT",
   RIGHT: "RIGHT",
-  TOP: "TOP",
-  BOTTOM: "BOTTOM",
+  UP: "TOP",
+  DOWN: "DOWN",
 };
 const ROTATION_DIRECTIONS = {
   CLOCKWISE: "CLOCKWISE",
   COUNTERCLOCKWISE: "COUNTERCLOCKWISE",
 };
+const FACE_COLORS = {
+  FRONT: "red",
+  BACK: "orange",
+  LEFT: "green",
+  RIGHT: "blue",
+  UP: "yellow",
+  DOWN: "white",
+}
 
 let cubeSize = 50;
 let cubeSquareAmount = 3; //not implemented yet
@@ -82,12 +90,12 @@ function createRubikCube() {
             x - 1,
             y - 1,
             z - 1,
-            z === 2 ? "red" : "white", // Front face
-            z === 0 ? "orange" : "white", // Back face
-            x === 0 ? "green" : "white", // Left face
-            x === 2 ? "blue" : "white", // Right face
-            y === 0 ? "yellow" : "white", // Top face
-            y === 2 ? "white" : "white" // Bottom face
+            z === 2 ? FACE_COLORS.FRONT : "white",
+            z === 0 ? FACE_COLORS.BACK : "white",
+            x === 0 ? FACE_COLORS.LEFT : "white",
+            x === 2 ? FACE_COLORS.RIGHT : "white",
+            y === 0 ? FACE_COLORS.UP : "white",
+            y === 2 ? FACE_COLORS.DOWN : "white"
           )
         );
       }
@@ -189,9 +197,9 @@ function parseMoveFace(move) {
     case "R":
       return FACES.RIGHT;
     case "U":
-      return FACES.TOP;
+      return FACES.UP;
     case "D":
-      return FACES.BOTTOM;
+      return FACES.DOWN;
     default:
       throw new Error(`Unknown move: ${move}`);
   }
