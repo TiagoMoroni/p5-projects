@@ -6,6 +6,7 @@ const groupTheory = (p) => {
   let intersectionPoints = [];
 
   let showStructure = false;
+  let showNodeCoords = true;
   let circleRadius;
   let trianglePoints;
 
@@ -25,7 +26,12 @@ const groupTheory = (p) => {
         x: point.x,
         y: point.y,
         color: color,
+        face: point.face,
         id: index,
+        faceX: point.faceX,
+        faceY: point.faceY,
+        faceZ: point.faceZ,
+        intersectionId: index,
       });
     });
   };
@@ -35,9 +41,9 @@ const groupTheory = (p) => {
 
     p.noFill();
     p.stroke(0);
-    if (showStructure) 
-      drawStructure();
+    if (showStructure) drawStructure();
 
+    p.background(50);
     drawGrid();
     drawNodes();
 
@@ -55,8 +61,39 @@ const groupTheory = (p) => {
     // Draw the intersection nodes
     nodes.forEach((node) => {
       p.push();
+
+      if(isAnimating){
+        // Find the first and second white nodes
+        let sameTypeNodes = nodes.filter((n) => rotatingFace === node.face);
+        let nodeIndex = sameTypeNodes.findIndex((n) => n.id === node.id);
+  
+        if (nodeIndex !== -1 && sameTypeNodes.length > 1) {
+          let nextNodeIndex = (nodeIndex + 1) % sameTypeNodes.length;
+          let nextNode = sameTypeNodes[nextNodeIndex];
+  
+          if (rotationAngle <= 90 && nodeIndex !== 4) {
+            // Interpolate positions
+            let t = rotationAngle / 90;
+            let interpolatedX = p.lerp(node.x, nextNode.x, t);
+            let interpolatedY = p.lerp(node.y, nextNode.y, t);
+  
+            // Temporarily move the node
+            p.translate(interpolatedX - node.x, interpolatedY - node.y);
+          }
+        }
+      }
+      p.translate(node.x, node.y);
+
+      // Draw the node
       p.fill(node.color || "white");
-      p.ellipse(node.x, node.y, 26);
+      p.ellipse(0, 0, 26);
+
+      if (showNodeCoords) {
+        p.fill(255);
+        // p.text(node.faceX + ", " + node.faceY + ", " + node.faceZ, 0, 0);
+        p.text(node.intersectionId, 0, 0);
+      }
+
       p.pop();
     });
   };
@@ -85,24 +122,20 @@ const groupTheory = (p) => {
             circle.x < otherCircle.x &&
             Math.abs(circle.y - otherCircle.y) < tolerance
           ) {
-            face = FACES.LEFT;
+            face = FACES.UP;
           } else if (
             circle.x > otherCircle.x &&
             Math.abs(circle.y - otherCircle.y) < tolerance
           ) {
-            face = FACES.RIGHT;
-          } else if (circle.x < otherCircle.x && circle.y < otherCircle.y) {
-            face = FACES.FRONT;
-          } else if (circle.x > otherCircle.x && circle.y > otherCircle.y) {
-            face = FACES.BACK;
-          } else if (
-            circle.y < otherCircle.y
-          ) {
-            face = FACES.UP;
-          } else if (
-            circle.y > otherCircle.y
-          ) {
             face = FACES.DOWN;
+          } else if (circle.x < otherCircle.x && circle.y < otherCircle.y) {
+            face = FACES.BACK;
+          } else if (circle.x > otherCircle.x && circle.y > otherCircle.y) {
+            face = FACES.FRONT;
+          } else if (circle.y < otherCircle.y) {
+            face = FACES.RIGHT;
+          } else if (circle.y > otherCircle.y) {
+            face = FACES.LEFT;
           }
           let intersection1 = {
             x: px + (h * dy) / d,

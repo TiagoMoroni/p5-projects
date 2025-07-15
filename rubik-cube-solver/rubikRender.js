@@ -23,6 +23,7 @@ let cubeSize = 50;
 let cubeSquareAmount = 3; //not implemented yet
 let animationSpeed = 10;
 let showFps = false;
+let allowOrbitControl = false
 
 let cubes = [];
 
@@ -42,15 +43,23 @@ function preload() {
 function setup() {
   createCanvas(windowWidth / 2, windowHeight, WEBGL);
   camera = createCamera();
+  
+  if(!allowOrbitControl){
+    camera.setPosition(300, -300, 600);
+    camera.lookAt(0, 0, 0);
+  }
+
   createRubikCube();
-  textFont(font); // Set the font after loading
+  textFont(font);
   shuffleCube();
 }
 
 function draw() {
   background(50);
 
-  orbitControl();
+  if(allowOrbitControl)
+    orbitControl();
+  
   lights();
 
   // Display FPS
